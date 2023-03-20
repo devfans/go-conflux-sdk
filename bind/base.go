@@ -181,6 +181,20 @@ func (c *BoundContract) RawTransact(opts *TransactOpts, calldata []byte) (*types
 	return c.transact(opts, &c.address, calldata)
 }
 
+func (c *BoundContract) Estimate(opts *TransactOpts, calldata []byte) (err error) {
+	utxBase := opts
+	if opts == nil {
+		utxBase = &TransactOpts{}
+	}
+	utx := types.UnsignedTransaction{
+		UnsignedTransactionBase: types.UnsignedTransactionBase(*utxBase),
+		To:                      &c.address,
+		Data:                    types.NewBytes(calldata),
+	}
+
+	return c.transactor.ApplyUnsignedTransactionDefault(&utx)
+}
+
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
 func (c *BoundContract) Transfer(opts *TransactOpts) (*types.UnsignedTransaction, *types.Hash, error) {
