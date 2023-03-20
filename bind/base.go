@@ -214,7 +214,8 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *types.Address, in
 		Data:                    types.NewBytes(input),
 	}
 
-	c.transactor.ApplyUnsignedTransactionDefault(&utx)
+	err := c.transactor.ApplyUnsignedTransactionDefault(&utx)
+	if err != nil { return nil, nil, err }
 
 	hash, err := c.transactor.SendTransaction(utx)
 	if err != nil {
